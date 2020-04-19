@@ -1,0 +1,70 @@
+﻿@page "/auth/login"
+
+@using NotionPlanner.Shared.Models.Auth
+@using NotionPlanner.Client.Models
+@layout AuthLayout
+
+@inject AuthenticationService authService
+@inject NavigationManager navigationManager
+@inject ILocalStorageService storageService
+
+<div class="row">
+    <div class="col-12">
+        <h2>Login</h2>
+        <EditForm Model="model" OnValidSubmit="LoginUser">
+            <RadzenCard>               
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <label>Email</label>
+                <RadzenTextBox @bind-Value="model.Email"></RadzenTextBox>
+
+                <label>Password</label>
+                <RadzenTextBox @bind-Value="model.Password"></RadzenTextBox>
+
+                <hr />
+
+                <RadzenButton ButtonType="Radzen.ButtonType.Submit" Text="Login"
+                              ButtonStyle="Radzen.ButtonStyle.Primary" class="btn-block ck mr-2"
+                              Disabled="isLoading" />                             
+                <RadzenButton ButtonType="Radzen.ButtonType.Button" Text="Register"
+                              ButtonStyle="Radzen.ButtonStyle.Secondary" class="btn-block mr-2" 
+                              Disabled="isLoading" Click="GotoRegisterPage"/>
+            </RadzenCard>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    LoginRequest model = new LoginRequest();
+    bool isLoading = false;
+    string message = string.Empty;
+    public async Task LoginUser()
+    {
+        isLoading = true;
+        var result = await authService.LoginUserAsync(model);
+        if (result.IsSuccess)
+        {
+            message = "Welcome to Notion Planner";
+
+            var userInfo = new LocalUserInfoStorage()
+            {
+                AccessToken = result.Token,
+                Email = result.Email,
+                Id = result.Id
+            };
+
+            await storageService.SetItemAsync("User", userInfo);
+        }
+        else
+        {
+            message = "Error";
+        }
+        isLoading = false;
+    }
+
+    void GotoRegisterPage()
+    {
+        navigationManager.NavigateTo("auth/register");
+    }
+}
+

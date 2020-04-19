@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30002.166
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotionPlanner.Client", "NotionPlanner.Client\NotionPlanner.Client.csproj", "{5B8D31D4-61BE-4C02-9AD9-3B126A6D8228}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NotionPlanner.Client", "NotionPlanner.Client\NotionPlanner.Client.csproj", "{5B8D31D4-61BE-4C02-9AD9-3B126A6D8228}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotionPlanner.Shared", "NotionPlanner.Shared\NotionPlanner.Shared.csproj", "{CB211311-000D-4391-A6A2-D29F8712C845}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NotionPlanner.Shared", "NotionPlanner.Shared\NotionPlanner.Shared.csproj", "{CB211311-000D-4391-A6A2-D29F8712C845}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
