@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using NotionPlanner.Shared.Services;
 using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace NotionPlanner.Client
 {
@@ -20,8 +21,9 @@ namespace NotionPlanner.Client
                 return new AuthenticationService(URL);
             });
             builder.Services.AddBlazoredLocalStorage();
-            builder.Services.AddOptions();
             builder.Services.AddAuthorizationCore();
+            builder.Services.AddOptions();
+            builder.Services.AddScoped<AuthenticationStateProvider, LocalAuthenticationStateProvider>();
             builder.RootComponents.Add<App>("app");
 
             builder.Services.AddSingleton(new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
