@@ -1,16 +1,65 @@
 ﻿@page "/"
+@using NotionPlanner.Shared.Common
+@using NotionPlanner.Shared.Models.Notion
+@using NotionPlanner.Client.Shared.Notion
+@*@attribute [Authorize]*@
 
-<AuthorizeView>
-    <Authorized>
-        <h1>Welcome @context.User.FindFirst("Email").Value</h1>
-    </Authorized>
-    <NotAuthorized>
-        <h1>Please Log in</h1>
-    </NotAuthorized>
-</AuthorizeView>
+@*<AuthorizeView>
+            <Authorized>
+                <h1>Hello, @context.User.FindFirst("FirstName").Value.ToString()!</h1>
+                <p>You can only see this content if you're authenticated.</p>
+            </Authorized>
+            <NotAuthorized>
+                <h1>Authentication Failure!</h1>
+                <p>You're not signed in.</p>
+            </NotAuthorized>
+        </AuthorizeView>
+    <h1>Hello, world!</h1>
 
-<h1>Hello, world!</h1>
+    Welcome to your new app.
+    <RadzenButton Text="Hey Cemal!"></RadzenButton>
+    <SurveyPrompt Title="How is Blazor working for you?" />*@
 
-Welcome to your new app.
-<RadzenButton Text="Hey Cemal!"></RadzenButton>
-<SurveyPrompt Title="How is Blazor working for you?" />
+
+
+<h1>Hello Jira</h1>
+
+<JobsContainer Jobs="Jobs" OnStatusUpdated="HandleStatusUpdated">
+    <JobList ListStatus="JobStatus.NotStarted" AllowedStatus="@(new JobStatus[] {JobStatus.InProgress})"></JobList>
+    <JobList ListStatus="JobStatus.InProgress" AllowedStatus="@(new JobStatus[] {JobStatus.InProgress})"></JobList>
+    <JobList ListStatus="JobStatus.Done" AllowedStatus="@(new JobStatus[] {JobStatus.NotStarted})"></JobList>
+</JobsContainer>
+
+<hr />
+
+<p>Last Updated Job <strong>@lastUpdatedJob</strong></p>
+<hr />
+
+@foreach (var task in Jobs)
+{
+    <p>@task.Detail - <strong>@task.Status</strong></p>
+}
+@code   {
+
+    List<JobModel> Jobs = new List<JobModel>();
+    string lastUpdatedJob = "";
+
+    protected override void OnInitialized()
+    {
+        for (int i = 1; i <= 15; i++)
+        {
+            Jobs.Add(new JobModel
+            {
+                Id = i,
+                Detail = "Job" + i,
+                Status = JobStatus.NotStarted,
+                UpdatedTime = DateTime.UtcNow
+            });
+        }
+    }
+
+    void HandleStatusUpdated(JobModel updatedJob)
+    {
+        lastUpdatedJob = updatedJob.Detail;
+    }
+}

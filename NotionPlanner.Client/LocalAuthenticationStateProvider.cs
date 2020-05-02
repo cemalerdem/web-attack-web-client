@@ -17,7 +17,7 @@ namespace NotionPlanner.Client
         }
 
         ///return the user or authentication state user claimes info
-        public async override Task<AuthenticationState> GetAuthenticationStateAsync()
+        public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
             if(await _localStorageService.ContainKeyAsync("User"))
             {
@@ -26,17 +26,26 @@ namespace NotionPlanner.Client
                 var claims = new []
                 {
                     new Claim("Id", userInfo.Email),
+                    new Claim("FirstName", userInfo.FirstName),
+                    new Claim("LastName", userInfo.LastName),
                     new Claim("AccessToken", userInfo.AccessToken),
-                    new Claim(ClaimTypes.NameIdentifier, userInfo.Email)
+                    new Claim(ClaimTypes.NameIdentifier, userInfo.Id.ToString())
                 };
 
                 var identity = new ClaimsIdentity(claims, "Bearer");
                 var user = new ClaimsPrincipal(identity);
-
-                return new AuthenticationState(user);                
+                var state =  new AuthenticationState(user);
+                NotifyAuthenticationStateChanged(Task.FromResult(state));
+                return state;
             }
 
             return new AuthenticationState(new ClaimsPrincipal());
+        }
+
+        public async Task LogoutAsync()
+        {
+            await _localStorageService.RemoveItemAsync("User");
+            NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(new ClaimsPrincipal())));
         }
     }
 }
