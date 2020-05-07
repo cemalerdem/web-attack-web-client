@@ -6,4 +6,7 @@
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
     <PackageReference Include="AKSoftware.WebApi" Version="3.0.1" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\Notion\" />
+  </ItemGroup>
 </Project>

@@ -1,5 +1,7 @@
 ﻿@page "/todo"
 
+@inject IJSRuntime JSRuntime;
+
 <div class="container">
     <div class="row">
         <div class="col-md-4">
@@ -19,7 +21,7 @@
                     </li>
                     <li class="ui-state-default">
                         <div class="checkbox">
-                            <label>
+                            <label style="margin-bottom:10px">
                                 <input type="checkbox" value="" />Buy bread
                             </label>
                         </div>
@@ -51,9 +53,18 @@
                 <h1>Already Done</h1>
                 <ul id="done-items" class="list-unstyled">
                     <li>Some item <button class="remove-item btn btn-default btn-xs pull-right"><span class="glyphicon glyphicon-remove"></span></button></li>
-
                 </ul>
             </div>
         </div>
     </div>
 </div>
+
+
+@code{
+
+    private async Task CreateTodo()
+    {
+        await JSRuntime.InvokeVoidAsync("createTodo");
+    }
+
+}

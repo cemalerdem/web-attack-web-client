@@ -1,55 +1,79 @@
 @page "/fetchdata"
+@using Microsoft.AspNetCore.SignalR.Client
+@using Newtonsoft.Json
+@using NotionPlanner.Shared.Services
+@using NotionPlanner.Shared.Common.Request
+
 @inject HttpClient Http
+@inject AdminService adminService
 
-<h1>Weather forecast</h1>
+<h1>SignalR Admin Dashboard</h1>
+<button class="btn btn-success" @onclick="async () => await ConnectToServer()" disabled="@isConnected">Start Application</button>
 
-<p>This component demonstrates fetching data from the server.</p>
+<h3>Connection Status: @connectionStatus</h3>
 
-@if (forecasts == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Temp. (C)</th>
-                <th>Temp. (F)</th>
-                <th>Summary</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var forecast in forecasts)
-            {
+<div class="row">
+    <div class="col-12">
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Summary</td>
+                    <th>MethodType</th>
+                    <th>Path</th>
+                    <th>StatusCode</th>
+                    <th>RequestPayload</th>
+                    <th>CreatedBy</th>
+                    <th>CreatedAtUTC</th>
                 </tr>
-            }
-        </tbody>
-    </table>
-}
+            </thead>
+            <tbody>
+                @foreach (var item in _notifications)
+                {
+                    <tr>
+                        <td>@item.MethodType</td>
+                        <td>@item.Path</td>
+                        <td>@item.StatusCode</td>
+                        <td>@item.QueryParameter</td>
+                        <td>@item.RequestPayload</td>
+                        <td>@item.CreatedBy</td>
+                        <td>@item.CreatedAtUTC</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
 
 @code {
-    private WeatherForecast[] forecasts;
 
-    protected override async Task OnInitializedAsync()
+    string url = "http://localhost:5000/notificationhub";
+
+    HubConnection _connection = null;
+    bool isConnected = false;
+    string connectionStatus = "Closed";
+
+    readonly List<RequestStreamResponse> _notifications = new List<RequestStreamResponse>();
+
+    private async Task ConnectToServer()
     {
-        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json");
-    }
+        _connection = new HubConnectionBuilder().WithUrl(url).Build();
 
-    public class WeatherForecast
-    {
-        public DateTime Date { get; set; }
+        await _connection.StartAsync();
+        isConnected = true;
+        connectionStatus = "Monitoring Start !!";
 
-        public int TemperatureC { get; set; }
+        _connection.Closed += async (s) =>
+        {
+            isConnected = false;
+            connectionStatus = "Disconnected !";
+            await _connection.StartAsync();
+            isConnected = true;
+        };
 
-        public string Summary { get; set; }
-
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+        _connection.On<string>("notification", m =>
+        {
+            var stream = JsonConvert.DeserializeObject<RequestStreamResponse>(m);
+            _notifications.Add(stream);
+            StateHasChanged();
+        });
     }
 }
