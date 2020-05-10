@@ -4,10 +4,18 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+.checkbox {
+
+}
 .todolist {
     background-color: #FFF;
     padding: 20px 20px 10px 20px;
     margin-top: 30px;
+}
+
+
+td {
+    word-break: break-all;
 }
 
 .todolist h1 {

@@ -17,9 +17,8 @@ namespace NotionPlanner.Client
         public static async Task Main(string[] args)
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
-            builder.Services.AddScoped<AuthenticationService>(s=>{
-                return new AuthenticationService(URL);
-            });
+            builder.Services.AddScoped<AuthenticationService>(s=> new AuthenticationService(URL));
+            builder.Services.AddScoped<AdminService>(s => new AdminService(URL));
             builder.Services.AddBlazoredLocalStorage();
             builder.Services.AddAuthorizationCore();
             builder.Services.AddOptions();
