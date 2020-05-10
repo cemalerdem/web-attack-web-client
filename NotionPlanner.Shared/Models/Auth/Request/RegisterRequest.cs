@@ -16,7 +16,9 @@ namespace NotionPlanner.Shared.Models.Auth
         [Required]
         [StringLength(25)]
         public string LastName { get; set; }
-
+        [Required]
+        [StringLength(25)]
+        public string UserName { get; set; }
         [Required]
         [StringLength(50)]
         public string Password { get; set; }

@@ -5,15 +5,21 @@
 @inject AuthenticationService  authService
 @inject NavigationManager navigationManager
 
+@if (ShowErrors)
+{
+    <div class="alert alert-danger" role="alert">
+        @foreach (var error in Errors)
+        {
+            <p>@error</p>
+        }
+    </div>
+}
 <div class="row">
     <div class="col-12">
         <h2>Create a new account</h2>
         <EditForm Model="model" OnValidSubmit="RegisterUser">
             <RadzenCard>
-                @if (!string.IsNullOrWhiteSpace(message))
-                {
-                    <div class="alert alert-info">@message</div>
-                }
+
                 <DataAnnotationsValidator />
                 <ValidationSummary />
 
@@ -25,7 +31,8 @@
 
                 <label>Email</label>
                 <RadzenTextBox @bind-Value="model.Email"></RadzenTextBox>
-
+                <label>Username</label>
+                <RadzenTextBox @bind-Value="model.UserName"></RadzenTextBox>
                 <label>Password</label>
                 <RadzenPassword @bind-Value="model.Password"></RadzenPassword>
 
@@ -48,19 +55,25 @@
     RegisterRequest model = new RegisterRequest();
 
     bool isBusy = false;
-    string message = string.Empty;
-    Models.AlertMessageType messageType = Models.AlertMessageType.Success;
+    private bool ShowErrors;
+    private IEnumerable<string> Errors;
 
     public async Task RegisterUser()
     {
+        ShowErrors = false;
         isBusy = true;
         var result = await authService.RegisterUserAsync(model);
-        if (result.IsSuccess == true)
+        if (result.Successful)
         {
-            message = result.Message;
-            messageType = Models.AlertMessageType.Success;
+            navigationManager.NavigateTo("/auth/login");
         }
-        isBusy = false;
+        else
+        {
+            Errors = result.Errors;
+            ShowErrors = true;
+            isBusy = false;
+
+        }
     }
 
     void GoToLogin()

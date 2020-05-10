@@ -1,11 +1,10 @@
-namespace NotionPlanner.Shared.Models.Auth
+using System.Collections.Generic;
+
+namespace NotionPlanner.Shared.Models.Auth.Response
 {
     public class UserRegisterResponse
     {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Email { get; set; }
-        public string Message { get; set; }
-        public bool IsSuccess { get; set; }
+        public bool Successful { get; set; }
+        public IEnumerable<string> Errors { get; set; }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace NotionPlanner.Shared.Common.Request
 {
-    public class RequestStreamResponse
+    public class RequestStream
     {
         public DateTime CreatedAtUTC { get; set; }
         public string MethodType { get; set; }
