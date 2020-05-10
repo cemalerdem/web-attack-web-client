@@ -21,20 +21,21 @@ namespace NotionPlanner.Client
         {
             if(await _localStorageService.ContainKeyAsync("User"))
             {
-                var userInfo = await _localStorageService.GetItemAsync<LocalUserInfoStorage>("User");
+                var userInfo = await _localStorageService.GetItemAsync<LocalUserInfo>("User");
 
                 var claims = new []
                 {
-                    new Claim("Id", userInfo.Email),
+                    new Claim("Email", userInfo.Email),
                     new Claim("FirstName", userInfo.FirstName),
                     new Claim("LastName", userInfo.LastName),
                     new Claim("AccessToken", userInfo.AccessToken),
-                    new Claim(ClaimTypes.NameIdentifier, userInfo.Id.ToString())
-                };
+                    new Claim(ClaimTypes.NameIdentifier, userInfo.Id)
+                }; 
 
                 var identity = new ClaimsIdentity(claims, "Bearer");
                 var user = new ClaimsPrincipal(identity);
                 var state =  new AuthenticationState(user);
+
                 NotifyAuthenticationStateChanged(Task.FromResult(state));
                 return state;
             }

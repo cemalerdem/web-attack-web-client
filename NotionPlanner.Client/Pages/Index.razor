@@ -1,21 +1,11 @@
 ﻿@page "/"
 @using NotionPlanner.Shared.Common
+
 @attribute [Authorize]
 
-<AuthorizeView>
-            <Authorized>
-                <h1>Hello, @context.User.FindFirst("FirstName").Value.ToString()!</h1>
-                <p>You can only see this content if you're authenticated.</p>
-            </Authorized>
-            <NotAuthorized>
-                <h1>Authentication Failure!</h1>
-                <p>You're not signed in.</p>
-            </NotAuthorized>
-        </AuthorizeView>
-    <h1>Hello, world!</h1>
 
-    Welcome to your new app.
-    <RadzenButton Text="Hey Cemal!"></RadzenButton>
-    <SurveyPrompt Title="How is Blazor working for you?" />
+Welcome to your new app.
+<RadzenButton Text="Hey Cemal!"></RadzenButton>
+<SurveyPrompt Title="How is Blazor working for you?" />
 
 

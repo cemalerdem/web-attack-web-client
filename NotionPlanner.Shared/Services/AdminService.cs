@@ -15,10 +15,10 @@ namespace NotionPlanner.Shared.Services
             _baseUrl = baseUrl;
         }
 
-        public async Task<List<RequestStreamResponse>> GetRequestStreamAsync()
+        public async Task<List<RequestStream>> GetRequestStreamAsync()
         {
-            var result = await _client.GetAsync<RequestStreamResponse>($"http://localhost:5000/api/Admin/request-stream");
-            return new List<RequestStreamResponse> {result.Result};
+            var result = await _client.GetAsync<RequestStream>($"http://localhost:5000/api/Admin/request-stream");
+            return new List<RequestStream> {result.Result};
         }
     }
 }
