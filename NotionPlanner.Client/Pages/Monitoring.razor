@@ -49,15 +49,16 @@
 <RadzenGrid AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
             AllowSorting="true" Data="@notifications" TItem="RequestStream" ColumnWidth="200px">
     <Columns>
-        <RadzenGridColumn TItem="RequestStream" Property="CreatedAtUTC" Title="Occurred Time" />
-        <RadzenGridColumn TItem="RequestStream" Property="MethodType" Title="Method" />
-        <RadzenGridColumn TItem="RequestStream" Property="Path" Title="Path" />
-        <RadzenGridColumn TItem="RequestStream" Property="StatusCode" Title="Status" />
-        <RadzenGridColumn TItem="RequestStream" Property="QueryParameter" Title="Query Parameter" />
-        <RadzenGridColumn TItem="RequestStream" Property="RequestPayload" Title="Request Payload">
-            <Template>
-                <RadzenIcon Icon="bug_report" />
-            </Template>
+        <RadzenGridColumn TItem="RequestStream" Property="timestamp" Title="Occurred Time" />
+        <RadzenGridColumn TItem="RequestStream" Property="method" Title="Method" />
+        <RadzenGridColumn TItem="RequestStream" Property="path" Title="Path" />
+        <RadzenGridColumn TItem="RequestStream" Property="statusCode" Title="Status" />
+        <RadzenGridColumn TItem="RequestStream" Property="query" Title="Query Parameter" />
+        <RadzenGridColumn TItem="RequestStream" Property="requestPayload" Title="Request Payload"/>
+        <RadzenGridColumn TItem="RequestStream" Property="result" Title="Result" >
+        <Template>
+            <RadzenIcon Icon="bug-report" />
+        </Template>
         </RadzenGridColumn>
     </Columns>
 </RadzenGrid>
@@ -69,6 +70,7 @@
     HubConnection _connection = null;
     bool isConnected = false;
     string connectionStatus = "Closed";
+    string icon = "";
 
     readonly List<RequestStream> notifications = new List<RequestStream>();
 
