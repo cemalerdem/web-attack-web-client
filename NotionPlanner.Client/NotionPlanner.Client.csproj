@@ -3,6 +3,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <RazorLangVersion>3.0</RazorLangVersion>
     <BlazorWebAssemblyEnableLinking>false</BlazorWebAssemblyEnableLinking>
+    <UserSecretsId>155c87e1-9202-4de0-a07d-4896a5c39666</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="BlazorStrap" Version="1.3.1" />
