@@ -13,7 +13,7 @@ namespace NotionPlanner.Client
 {
     public class Program
     {
-        private const string URL = "http://localhost:5000";
+        private const string URL = "https://webattackapi.azurewebsites.net/";
         public static async Task Main(string[] args)
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);

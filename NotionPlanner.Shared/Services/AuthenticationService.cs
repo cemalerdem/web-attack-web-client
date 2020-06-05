@@ -18,14 +18,14 @@ namespace NotionPlanner.Shared.Services
 
         public async Task<UserRegisterResponse> RegisterUserAsync(RegisterRequest request)
         {
-            var result = await client.PostAsync<UserRegisterResponse>($"http://localhost:5000/api/Auth/register", request);
+            var result = await client.PostAsync<UserRegisterResponse>($"{_baseUrl}api/Auth/register", request);
             return result.Result;
         }
 
         public async Task<LoginResponse> LoginUserAsync(LoginRequest request)
         {
 
-            var result = await client.PostAsync<LoginResponse>($"http://localhost:5000/api/Auth/login", request);
+            var result = await client.PostAsync<LoginResponse>($"{_baseUrl}api/Auth/login", request);
             return result.Result;
         }
     }
