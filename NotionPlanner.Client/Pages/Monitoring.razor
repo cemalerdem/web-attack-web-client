@@ -2,8 +2,8 @@
 @using System.Globalization
 @using Microsoft.AspNetCore.SignalR.Client
 @using Newtonsoft.Json
-@using NotionPlanner.Shared.Services
-@using NotionPlanner.Shared.Common.Request
+@using NotionPlanner.Client.Models
+@using NotionPlanner.Shared.Common.Dtos
 
 @inject HttpClient Http
 @inject AdminService adminService
@@ -16,11 +16,11 @@
     <div class="col-md-6">
         <div class="col-md-6 col-sm-12 p-4">
             <RadzenChart>
-                <RadzenPieSeries Data="@revenues" CategoryProperty="Quarter" ValueProperty="Revenue">
+                <RadzenPieSeries Data="@totalRequest" CategoryProperty="Method" ValueProperty="Count">
                     <TooltipTemplate>
                         <div class="rz-donut-content">
-                            <div>Revenue</div>
-                            <div>for 2020</div>
+                            <div>Total</div>
+                            <div>Request</div>
                         </div>
                     </TooltipTemplate>
                 </RadzenPieSeries>
@@ -31,49 +31,43 @@
         <div class="col-sm-12">
             <label>Smooth <RadzenCheckBox @bind-Value="@smooth" Name="smooth"></RadzenCheckBox></label>
             <RadzenChart>
-                <RadzenLineSeries Smooth="@smooth" Data="@revenue2019" CategoryProperty="Date" Title="2019" LineType="LineType.Dashed" ValueProperty="Revenue">
-                    <RadzenMarkers MarkerType="MarkerType.Square" />
-                </RadzenLineSeries>
-                <RadzenLineSeries Smooth="@smooth" Data="@revenue2020" CategoryProperty="Date" Title="2020" ValueProperty="Revenue">
+                <RadzenLineSeries Smooth="@smooth" Data="@weeklyRequests" CategoryProperty="WeekDay" Title="Weekly" LineType="LineType.Dashed" ValueProperty="Count">
                     <RadzenMarkers MarkerType="MarkerType.Circle" />
                 </RadzenLineSeries>
-                <RadzenCategoryAxis Padding="20" FormatString="{0:MMM}" />
-                <RadzenValueAxis Formatter="@FormatAsUSD">
+                <RadzenCategoryAxis Padding="20" FormatString="{0:ddd}" />
+                <RadzenValueAxis>
                     <RadzenGridLines Visible="true" />
-                    <RadzenAxisTitle Text="Revenue in USD" />
+                    <RadzenAxisTitle Text="Weekly Request" />
                 </RadzenValueAxis>
             </RadzenChart>
         </div>
     </div>
 </div>
 <RadzenGrid AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-            AllowSorting="true" Data="@notifications" TItem="RequestStream" ColumnWidth="200px">
+             AllowSorting="true" Data="@notifications" TItem="RequestStream" ColumnWidth="200px">
     <Columns>
-        <RadzenGridColumn TItem="RequestStream" Property="timestamp" Title="Occurred Time" />
-        <RadzenGridColumn TItem="RequestStream" Property="method" Title="Method" />
-        <RadzenGridColumn TItem="RequestStream" Property="path" Title="Path" />
-        <RadzenGridColumn TItem="RequestStream" Property="statusCode" Title="Status" />
-        <RadzenGridColumn TItem="RequestStream" Property="query" Title="Query Parameter" />
-        <RadzenGridColumn TItem="RequestStream" Property="requestPayload" Title="Request Payload"/>
-        <RadzenGridColumn TItem="RequestStream" Property="result" Title="Result" >
-        <Template>
-            <RadzenIcon Icon="bug-report" />
-        </Template>
-        </RadzenGridColumn>
+        <RadzenGridColumn TItem="RequestStream" Property="CreatedAtUTC" Title="Occurred Time" />
+        <RadzenGridColumn TItem="RequestStream" Property="Method" Title="Method" />
+        <RadzenGridColumn TItem="RequestStream" Property="Path" Title="Path" />
+        <RadzenGridColumn TItem="RequestStream" Property="StatusCode" Title="Status" />
+        <RadzenGridColumn TItem="RequestStream" Property="Query" Title="Query Parameter" />
+        <RadzenGridColumn TItem="RequestStream" Property="RequestPayload" Title="Request Payload" />
+        
+       
     </Columns>
 </RadzenGrid>
 
 @code {
 
-    string url = "http://localhost:5000/notificationhub";
+    string url = "https://webattackapi.azurewebsites.net/notificationhub";
 
     HubConnection _connection = null;
     bool isConnected = false;
     string connectionStatus = "Closed";
-    string icon = "";
 
     readonly List<RequestStream> notifications = new List<RequestStream>();
-
+    List<TotalRequestDto> totalRequest = new List<TotalRequestDto>();
+    List<WeeklyRequest> weeklyRequests = new List<WeeklyRequest>();
     private async Task ConnectToServer()
     {
         _connection = new HubConnectionBuilder().WithUrl(url).Build();
@@ -93,173 +87,25 @@
         _connection.On<string>("notification", m =>
         {
             var stream = JsonConvert.DeserializeObject<RequestStream>(m);
+
             notifications.Add(stream);
             StateHasChanged();
         });
     }
-    class DataItemm
+
+    protected override async Task OnInitializedAsync()
     {
-        public string Quarter { get; set; }
-        public double Revenue { get; set; }
+        totalRequest = await adminService.GetRequestCard();
+        weeklyRequests = await adminService.GetWeeklyRequests();
     }
 
-    DataItemm[] revenues = new DataItemm[] {
-        new DataItemm
-        {
-            Quarter = "Q1",
-            Revenue = 30000
-        },
-        new DataItemm
-        {
-            Quarter = "Q2",
-            Revenue = 40000
-        },
-        new DataItemm
-        {
-            Quarter = "Q3",
-            Revenue = 50000
-        },
-        new DataItemm
-        {
-            Quarter = "Q4",
-            Revenue = 80000
-        },
-    };
     bool smooth = false;
-    class DataItem
-    {
-        public DateTime Date { get; set; }
-        public double Revenue { get; set; }
-    }
+ 
 
     string FormatAsUSD(object value)
     {
         return ((double)value).ToString("C0", CultureInfo.CreateSpecificCulture("en-US"));
     }
 
-    DataItem[] revenue2019 = new DataItem[] {
-        new DataItem
-        {
-            Date = DateTime.Parse("2019-01-01"),
-            Revenue = 234000
-        },
-        new DataItem
-        {
-            Date = DateTime.Parse("2019-02-01"),
-            Revenue = 269000
-        },
-        new DataItem
-        {
-            Date = DateTime.Parse("2019-03-01"),
-            Revenue = 233000
-        },
-        new DataItem
-        {
-            Date = DateTime.Parse("2019-04-01"),
-            Revenue = 244000
-        },
-        new DataItem
-        {
-            Date = DateTime.Parse("2019-05-01"),
-            Revenue = 214000
-        },
-        new DataItem
-        {
-            Date = DateTime.Parse("2019-06-01"),
-            Revenue = 253000
-        },
-        new DataItem
-        {
-            Date = DateTime.Parse("2019-07-01"),
-            Revenue = 274000
-        },
-        new DataItem
-        {
-            Date = DateTime.Parse("2019-08-01"),
-            Revenue = 284000
-        },
-        new DataItem
-        {
-            Date = DateTime.Parse("2019-09-01"),
-            Revenue = 273000
-        },
-        new DataItem
-        {
-            Date = DateTime.Parse("2019-10-01"),
-            Revenue = 282000
-        },
-        new DataItem
-        {
-            Date = DateTime.Parse("2019-11-01"),
-            Revenue = 289000
-        },
-        new DataItem
-        {
-            Date = DateTime.Parse("2019-12-01"),
-            Revenue = 294000
-        }
-    };
 
-    DataItem[] revenue2020 = new DataItem[] {
-        new DataItem
-        {
-            Date = DateTime.Parse("2019-01-01"),
-            Revenue = 334000
-        },
-        new DataItem
-        {
-            Date = DateTime.Parse("2019-02-01"),
-            Revenue = 369000
-        },
-        new DataItem
-        {
-            Date = DateTime.Parse("2019-03-01"),
-            Revenue = 333000
-        },
-        new DataItem
-        {
-            Date = DateTime.Parse("2019-04-01"),
-            Revenue = 344000
-        },
-        new DataItem
-        {
-            Date = DateTime.Parse("2019-05-01"),
-            Revenue = 314000
-        },
-        new DataItem
-        {
-            Date = DateTime.Parse("2019-06-01"),
-            Revenue = 353000
-        },
-        new DataItem
-        {
-            Date = DateTime.Parse("2019-07-01"),
-            Revenue = 374000
-        },
-        new DataItem
-        {
-            Date = DateTime.Parse("2019-08-01"),
-            Revenue = 384000
-        },
-        new DataItem
-        {
-            Date = DateTime.Parse("2019-09-01"),
-            Revenue = 373000
-        },
-        new DataItem
-        {
-            Date = DateTime.Parse("2019-10-01"),
-            Revenue = 382000
-        },
-        new DataItem
-        {
-            Date = DateTime.Parse("2019-11-01"),
-            Revenue = 389000
-        },
-        new DataItem
-        {
-            Date = DateTime.Parse("2019-12-01"),
-            Revenue = 394000
-        }
-    };
 }
